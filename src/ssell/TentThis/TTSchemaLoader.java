@@ -712,19 +712,20 @@ public class TTSchemaLoader
 			tent.get( i ).setType( Material.AIR );
 		}
 		
-		tent.clear( );
 		
 		TTPlayer ttPlayer = plugin.manager.getPlayer( player.getName( ) );
 		
 		if( ttPlayer != null )
 		{
-			ttPlayer.tentList.remove( tent );
+			ttPlayer.tentList.remove( ttPlayer.tentList.size()-1 );
+			
 		}
 		else
 		{
 			log.info( "TentThis: TTPlayer is null! [SchemaLoader|DestroyTent]" );
 		}
+		tent.clear( );
+		fragileList.clear();
 	}
 }
-
 
