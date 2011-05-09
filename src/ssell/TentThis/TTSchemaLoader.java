@@ -713,7 +713,7 @@ public class TTSchemaLoader
 		}
 		
 		tent.clear( );
-		fragileList.clear
+		fragileList.clear();
 		
 		TTPlayer ttPlayer = plugin.manager.getPlayer( player.getName( ) );
 		
