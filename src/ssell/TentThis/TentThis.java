@@ -1,11 +1,14 @@
 package ssell.TentThis;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.Configuration;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -38,7 +42,35 @@ public class TentThis
 	public final TTManager manager = new TTManager( this );
 	public final TTReverseSchema reverseSchema = new TTReverseSchema( this );
 	
+	static String mainDirectory = "plugins/TentThis";
+	File file = new File(mainDirectory + File.separator + "config.yml");
+	
+	
 	//--------------------------------------------------------------------------------------
+	
+	public Configuration load(){
+
+        try {
+            Configuration config = new Configuration(file);
+            config.load();
+            return config;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+	
+	public void write(String root, String x){ //just so you know, you may want to write a boolean, integer or double to the file as well, therefore u wouldnt write it to the file as "String" you would change it to something else
+    	Configuration config = load();
+        config.setProperty(root, x);
+        config.save();
+    }
+
+    public  String read(String root){
+    	Configuration config = load();
+        return config.getString(root);
+    }
 	
 	public void onEnable( )
 	{
@@ -60,7 +92,7 @@ public class TentThis
 		getDefaults( );
 		setupSchemas( );
 		
-		log.info( "TentThis v2.1.0 by ssell is enabled!" );		
+		log.info( "TentThis: v2.1.0 by ssell is enabled!" );		
 	}
 	
 	public void onDisable( )
@@ -477,81 +509,49 @@ public class TentThis
 	
 	public boolean getDefaults( )
 	{
-		Scanner scanner;
 	
-		try 
-		{
-			scanner = new Scanner( new BufferedReader( new FileReader( "plugins/TentThis/TentThis.properties" ) ) );
-		} 
-		catch ( FileNotFoundException e ) 
-		{
-			log.info( "TentThis: Failed to find 'TentThis.properties'!" );
-			
-			return false;
-		}
+		new File(mainDirectory).mkdir();
+
+
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+                this.write("config.CreationBlock","19");
+                this.write("config.TentLimit", "-1");
+                this.write("config.NoCommand", "false");
+                this.write("config.KeepBlock", "false");
+                this.write("Schemas.Name", "Default");
+                this.write("Schemas.DeconstructionBlock", "35");
+                this.write("Schemas.DimensionX", "5");
+                this.write("Schemas.DimensionY", "6");
+                this.write("Schemas.Layers", "4");
+                this.write("Schemas.WoolColor", "green");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } 
+        	
 		
-		while( scanner.hasNext( ) )
-		{
-			String string = scanner.next( );
-			
-			if( string.contains( "CreationBlock=" ) )
-			{
-				String substr = string.substring( 14 );
-				
-				try
-				{
-					int block = Integer.parseInt( substr.trim( ) );
-					
-					blockListener.creationBlock = block;
-					playerListener.creationBlock = block;
-					
-				}
-				catch( NumberFormatException nfe )
-				{
-					log.info( "TentThis: '" + string + "' improperly formatted! [getCreationBlock]" );
-					
-					scanner.close( );
-					
-					return false;
-				}
-			}
-			else if( string.contains( "TentLimit=" ) )
-			{
-				String substr = string.substring( 10 );
-				
-				try
-				{
-					int limit = Integer.parseInt( substr.trim( ) );
-					
-					manager.globalLimit = limit;
-					
-				}
-				catch( NumberFormatException nfe )
-				{
-					log.info( "TentThis: '" + string + "' improperly formatted! [getCreationBlock]" );
-					
-					scanner.close( );
-					
-					return false;
-				}
-			}
-			else if( string.contains( "NoCommand=" ) )
-			{
-				String substr = string.substring( 10 );
-				
-				if( substr.equalsIgnoreCase( "true" ) )
-				{
-					noCommandDefault = true;
-				}
-				
-				scanner.close( );
-				
-				return true;
-			}
-		}
+		//Get Creation Block from config.yml & Display info in log
+		String readcblock = this.read("config.CreationBlock");
+		int cblock = Integer.parseInt(readcblock.trim());
+		log.info( "TentThis: Creation Block set to " + cblock + " (" + Material.getMaterial(cblock) + ")" );
+		blockListener.creationBlock = cblock;
+		playerListener.creationBlock = cblock;
+	
+		//Get Tent Limit from config.yml & Display info in log
+		String readtentlimit = this.read("config.TentLimit");
+		int tlimit = Integer.parseInt(readtentlimit.trim());
+		log.info( "TentThis: Default Tent Limit set to " + tlimit );
+		manager.globalLimit = tlimit;
 		
-		scanner.close( );
+		//Get NoCommand from config.yml & Display info in log
+		String readnocommand = this.read("config.NoCommand");
+		Boolean nocommand = Boolean.parseBoolean(readnocommand);
+		log.info( "TentThis: NoCommand set to " + nocommand );
+		noCommandDefault = nocommand;
 		
+       
 		return false;
 	}
 	
@@ -570,6 +570,7 @@ public class TentThis
 			return;
 		}
 		
+		
 		while( scanner.hasNext( ) )
 		{
 			String str = scanner.next( );
@@ -585,4 +586,5 @@ public class TentThis
 		//Set default as the first tent in the list
 		manager.defaultSchema = manager.tentList.get( 0 ).schemaName;
 	}
-}
+	}
+
