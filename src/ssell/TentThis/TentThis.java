@@ -228,6 +228,8 @@ public class TentThis
 			if( !TentThis.Permissions.has( player, "TentThis.commands.setOwnSchema" ) )
 			{
 				player.sendMessage( ChatColor.DARK_RED + "You don't have permission to perform this action!" );
+				
+				return;
 			}
 		}
 		
@@ -259,6 +261,8 @@ public class TentThis
 			if( !TentThis.Permissions.has( player, "TentThis.commands.setAllSchema" ) )
 			{
 				player.sendMessage( ChatColor.DARK_RED + "You don't have permission to perform this action!" );
+				
+				return;
 			}
 		}
 		
@@ -348,9 +352,20 @@ public class TentThis
 	 */
 	public void reloadCommand( Player player )
 	{
+		if( permission )
+		{
+			if( !TentThis.Permissions.has( player, "TentThis.commands.reload" ) )
+			{
+				player.sendMessage( ChatColor.DARK_RED + "You don't have permission to perform this action!" );
+				
+				return;
+			}
+		}
+		
 		if( getDefaults( ) )
 		{
 			player.sendMessage( ChatColor.GOLD + "TentThis reload successful!" );
+			log.info("TentThis reloaded by " +  player.getDisplayName());
 		}
 		else
 		{
