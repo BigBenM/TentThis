@@ -97,7 +97,8 @@ public class TTBlockListener
 				
 				if( tent != null )
 				{
-					event.getPlayer( ).getInventory( ).addItem( new ItemStack( creationBlock, 1 ) );
+					//Commented code to give back creation block.
+					//event.getPlayer( ).getInventory( ).addItem( new ItemStack( creationBlock, 1 ) );
 					
 					plugin.schemaLoader.destroyTent( tent, event.getPlayer( ) );
 				}
