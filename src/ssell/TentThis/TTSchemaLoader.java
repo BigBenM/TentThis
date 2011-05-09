@@ -560,9 +560,9 @@ public class TTSchemaLoader
 		
 		if( ttPlayer != null )
 		{
-			JavaPair< String, List< Block > > newPair = new JavaPair< String, List< Block > >( "", newTent );
+			JavaPair< String, List< Block > > newPair = new JavaPair< String, List< Block > >( tent.schemaName, newTent );
 			ttPlayer.tentList.add( newPair );
-			log.info ( "" + newTent );
+			//log.info ( "" + newPair );
 		}
 		else
 		{
@@ -718,8 +718,8 @@ public class TTSchemaLoader
 		if( ttPlayer != null )
 		{
 			//JavaPair< String, List< Block > > newPair2 = new JavaPair< String, List< Block > >( tent.schemaName, tent );
-			ttPlayer.tentList.remove( newPair );
-			log.info ("This is " + newPair );
+			ttPlayer.tentList.remove( tent );
+			//log.info("" + tent);
 		}
 		else
 		{
