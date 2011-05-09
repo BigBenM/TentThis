@@ -712,8 +712,6 @@ public class TTSchemaLoader
 			tent.get( i ).setType( Material.AIR );
 		}
 		
-		tent.clear( );
-		fragileList.clear();
 		
 		TTPlayer ttPlayer = plugin.manager.getPlayer( player.getName( ) );
 		
@@ -725,6 +723,9 @@ public class TTSchemaLoader
 		{
 			log.info( "TentThis: TTPlayer is null! [SchemaLoader|DestroyTent]" );
 		}
+		
+		tent.clear( );
+		fragileList.clear();
 	}
 }
 
