@@ -22,6 +22,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
+import org.bukkit.util.config.ConfigurationNode;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -44,11 +45,13 @@ public class TentThis
 	
 	static String mainDirectory = "plugins/TentThis";
 	File file = new File(mainDirectory + File.separator + "config.yml");
+	File playr = new File(mainDirectory + File.separator + "players.yml");
+	
 	
 	
 	//--------------------------------------------------------------------------------------
 	
-	public Configuration load(){
+	public Configuration load(File file){
 
         try {
             Configuration config = new Configuration(file);
@@ -61,16 +64,30 @@ public class TentThis
         return null;
     }
 	
-	public void write(String root, String x){ //just so you know, you may want to write a boolean, integer or double to the file as well, therefore u wouldnt write it to the file as "String" you would change it to something else
-    	Configuration config = load();
+	public void writeConfig(String root, String x){ //just so you know, you may want to write a boolean, integer or double to the file as well, therefore u wouldnt write it to the file as "String" you would change it to something else
+    	Configuration config = load(file);
         config.setProperty(root, x);
         config.save();
     }
 
-    public  String read(String root){
-    	Configuration config = load();
+	public void writePlayr(String root, String x){ //just so you know, you may want to write a boolean, integer or double to the file as well, therefore u wouldnt write it to the file as "String" you would change it to something else
+    	Configuration config = load(playr);
+        config.setProperty(root, x);
+        config.save();
+    }	
+	
+    public String readConfig(String root){
+    	Configuration config = load(file);
         return config.getString(root);
     }
+    
+    public String readPlayr(String root){
+    	Configuration config = load(playr);
+        return config.getString(root);
+    }
+    
+
+
 	
 	public void onEnable( )
 	{
@@ -92,7 +109,9 @@ public class TentThis
 		getDefaults( );
 		setupSchemas( );
 		
-		log.info( "TentThis: v2.1.0 by ssell is enabled!" );		
+		
+		
+		log.info( "TentThis: v2.5 Unofficial by BigBenM is enabled!" );		
 	}
 	
 	public void onDisable( )
@@ -516,73 +535,67 @@ public class TentThis
         if(!file.exists()){
             try {
                 file.createNewFile();
-                this.write("config.CreationBlock","19");
-                this.write("config.TentLimit", "-1");
-                this.write("config.NoCommand", "false");
-                this.write("config.KeepBlock", "false");
-                this.write("Schemas.Name", "Default");
-                this.write("Schemas.DeconstructionBlock", "35");
-                this.write("Schemas.DimensionX", "5");
-                this.write("Schemas.DimensionY", "6");
-                this.write("Schemas.Layers", "4");
-                this.write("Schemas.WoolColor", "green");
+                this.writeConfig("config.CreationBlock","19");
+                this.writeConfig("config.TentLimit", "-1");
+                this.writeConfig("config.NoCommand", "false");
+                this.writeConfig("config.KeepBlock", "false");
+                this.writeConfig("config.DefaultSchema", "Single");
+                this.writeConfig("Schemas.Name", "Default");
+                this.writeConfig("Schemas.DeconstructionBlock", "35");
+                this.writeConfig("Schemas.DimensionX", "5");
+                this.writeConfig("Schemas.DimensionY", "6");
+                this.writeConfig("Schemas.Layers", "4");
+                this.writeConfig("Schemas.WoolColor", "green");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } 
-        	
-		
-		//Get Creation Block from config.yml & Display info in log
-		String readcblock = this.read("config.CreationBlock");
+        
+        if(!playr.exists()){
+            try {
+                playr.createNewFile();
+                this.writePlayr("JohnDoe", "");
+                this.writePlayr("JohnDoe.DefaultSchema", "Single");
+                this.writePlayr("JohnDoe.GetBlockBack", "false");
+                this.writePlayr("JohnDoe.TentLimit", "-1");
+                this.writePlayr("JohnDoe.TentAmount", "0");
+                this.writePlayr("JohnDoe.Tents.Locations", "");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } 
+        
+        //Get Creation Block from config.yml & Display info in log
+		String readcblock = this.readConfig("config.CreationBlock");
 		int cblock = Integer.parseInt(readcblock.trim());
 		log.info( "TentThis: Creation Block set to " + cblock + " (" + Material.getMaterial(cblock) + ")" );
 		blockListener.creationBlock = cblock;
 		playerListener.creationBlock = cblock;
 	
 		//Get Tent Limit from config.yml & Display info in log
-		String readtentlimit = this.read("config.TentLimit");
+		String readtentlimit = this.readConfig("config.TentLimit");
 		int tlimit = Integer.parseInt(readtentlimit.trim());
 		log.info( "TentThis: Default Tent Limit set to " + tlimit );
 		manager.globalLimit = tlimit;
 		
 		//Get NoCommand from config.yml & Display info in log
-		String readnocommand = this.read("config.NoCommand");
+		String readnocommand = this.readConfig("config.NoCommand");
 		Boolean nocommand = Boolean.parseBoolean(readnocommand);
 		log.info( "TentThis: NoCommand set to " + nocommand );
 		noCommandDefault = nocommand;
 		
-       
-		return false;
+		
+		
+		return true;
 	}
 	
 	public void setupSchemas( )
 	{		
 		//Gather all of the schemas
-		Scanner scanner;
 		
-		try 
-		{
-			scanner = new Scanner( new FileReader( "plugins/TentThis/TentThis.properties" ) );
-		} 
-		catch( FileNotFoundException e ) 
-		{
-			log.info( "TentThis: Failed to open TentThis.properties! [SetupSchemas]" );
-			return;
-		}
+		String name2 = this.readConfig("config.DefaultSchema");
 		
-		
-		while( scanner.hasNext( ) )
-		{
-			String str = scanner.next( );
-			
-			if( str.contains( "<tentSchema=") )
-			{
-				String name = str.substring( 13, str.length( )- 2 );
-				
-				manager.createTent( name );
-			}
-		}
-		
+		manager.createTent(name2);
 		//Set default as the first tent in the list
 		manager.defaultSchema = manager.tentList.get( 0 ).schemaName;
 	}

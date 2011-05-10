@@ -1,12 +1,6 @@
 package ssell.TentThis;
 
 import java.io.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,9 +17,12 @@ public class TTManager
 	public List< TTPlayer > playerList = new ArrayList< TTPlayer >( );
 	
 	private final TentThis plugin;
+
+	public int globalLimit;
+
+	public String defaultSchema;
 	
-	public int globalLimit = -1;
-	public String defaultSchema = "default";
+	public String tent = defaultSchema;
 	
 	public TTManager( TentThis instance )
 	{
@@ -165,19 +162,12 @@ public class TTManager
 		playerList.add( player );
 		
 		//Add to file
-		try 
-		{
-			BufferedWriter out = new BufferedWriter(new FileWriter( "plugins/TentThis/players.txt", true ) );
-			
-			out.newLine( );
-			out.write( player.name + " " + player.currentTent.schemaName + " " + player.limit );
-			
-			out.close( );
-		} 
-		catch( IOException e ) 
-		{
-			log.info( "TentThis: Failed to write to 'plugins/TentThis/players.txt'!" );
-		}
+		plugin.writePlayr(player.name, "");
+        plugin.writePlayr(player.name+".DefaultSchema", "Single");
+        plugin.writePlayr(player.name+".GetBlockBack", "false");
+        plugin.writePlayr(player.name+".TentLimit", "-1");
+        plugin.writePlayr(player.name+".TentAmount", "0");
+        plugin.writePlayr(player.name+".Tents.Locations", "");	
 	}
 	
 	public void savePlayer( String name )
