@@ -685,7 +685,7 @@ public class TTSchemaLoader
 		}
 	}
 	
-	public void destroyTent( List< Block > tent, Player player )
+	public void destroyTent( List< Block > tent, Player destroyingPlayer , TTPlayer owningPlayer, int tentListIndex)
 	{		
 		for( int i = 0; i < tent.size( ); i++ )
 		{
@@ -713,17 +713,15 @@ public class TTSchemaLoader
 		}
 		
 		
-		TTPlayer ttPlayer = plugin.manager.getPlayer( player.getName( ) );
-		
-		if( ttPlayer != null )
+		if( owningPlayer != null )
 		{
 			//JavaPair< String, List< Block > > newPair2 = new JavaPair< String, List< Block > >( tent.schemaName, tent );
-			ttPlayer.tentList.remove( tent );
+			owningPlayer.tentList.remove( tentListIndex );
 			//log.info("" + tent);
 		}
 		else
 		{
-			log.info( "TentThis: TTPlayer is null! [SchemaLoader|DestroyTent]" );
+			log.info( "TentThis: owningPlayer is null! [SchemaLoader|DestroyTent]" );
 		}
 		
 		tent.clear( );
