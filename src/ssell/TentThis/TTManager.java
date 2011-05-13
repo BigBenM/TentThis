@@ -83,6 +83,8 @@ public class TTManager
 		}
 		
 		tentList.add( plugin.schemaLoader.createTent( name ) );
+		plugin.writeTents("test", tentList);
+		
 	}
 	
 	//--------------------------------------------------------------------------------------
@@ -168,6 +170,7 @@ public class TTManager
         plugin.writePlayr(player.name+".TentLimit", "-1");
         plugin.writePlayr(player.name+".TentAmount", "0");
         plugin.writePlayr(player.name+".Tents.Locations", "");	
+        
 	}
 	
 	public void savePlayer( String name )

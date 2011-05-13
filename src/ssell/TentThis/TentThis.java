@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -75,6 +76,12 @@ public class TentThis
         config.setProperty(root, x);
         config.save();
     }	
+	
+	public void writeTents(String root, ArrayList<String> tick ){ //just so you know, you may want to write a boolean, integer or double to the file as well, therefore u wouldnt write it to the file as "String" you would change it to something else
+    	Configuration config = load(playr);
+        config.setProperty(root, tick);
+        config.save();
+    }
 	
     public String readConfig(String root){
     	Configuration config = load(file);
@@ -517,7 +524,7 @@ public class TentThis
 			{
 				//Player can build more
 				schemaLoader.renderTent( getServer( ).getPlayer( name ), block, manager.getPlayer( name ).currentTent );
-				
+				this.writeTents("test", manager.tentList);
 			}
 			else
 			{
@@ -598,6 +605,11 @@ public class TentThis
 		manager.createTent(name2);
 		//Set default as the first tent in the list
 		manager.defaultSchema = manager.tentList.get( 0 ).schemaName;
+	}
+
+	public void writeTents(String root, List<TTTent> tentList) {
+		// TODO Auto-generated method stub
+		
 	}
 	}
 

@@ -465,9 +465,6 @@ public class TTSchemaLoader
 	public boolean buildTent( Location location, int alignment, TTTent tent, Player player )
 	{
 	
-		log.info("What is " + tent);
-		
-		
 		int length = tent.blockList.get( 0 ).size( );
 		int width = tent.blockList.get( 0 ).get( 0 ).size( );
 		int height = tent.blockList.size( );
