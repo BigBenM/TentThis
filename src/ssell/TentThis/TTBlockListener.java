@@ -52,12 +52,12 @@ public class TTBlockListener
 		{
 			
 			//Get the player that owns the tent
-			TTPlayer player = plugin.manager.whoOwnsThis( event.getBlock( ) );
+			TTPlayer owningPlayer = plugin.manager.whoOwnsThis( event.getBlock( ) );
 			
-			if( player != null )
+			if( owningPlayer != null )
 			{				
 				//Do not allow unauthorized players to break the tent.
-				if( !event.getPlayer( ).getName( ).equalsIgnoreCase( player.name ) )
+				if( !event.getPlayer( ).getName( ).equalsIgnoreCase( owningPlayer.name ) )
 				{
 					if( plugin.permission )
 					{
@@ -79,16 +79,17 @@ public class TTBlockListener
 				
 				//Get the actual tent
 				List< Block > tent = null;
+                                int tentListIndex = -1;
 				
-				for( int i = 0; i < player.tentList.size( ); i++ )
+				for( int i = 0; i < owningPlayer.tentList.size( ); i++ )
 				{	
-					if( player.tentList.get( i ).second.contains( event.getBlock( ) ) )
+					if( owningPlayer.tentList.get( i ).second.contains( event.getBlock( ) ) )
 					{
 						if( plugin.manager.destructionBlockBelongToSchema( 
-							player.tentList.get( i ).first, event.getBlock( ).getTypeId( ) ) )
+							owningPlayer.tentList.get( i ).first, event.getBlock( ).getTypeId( ) ) )
 						{
-							tent = player.tentList.get( i ).second;
-							
+							tent = owningPlayer.tentList.get( i ).second;
+                                                        tentListIndex = i;
 							break;
 						}
 					}
@@ -97,10 +98,8 @@ public class TTBlockListener
 				
 				if( tent != null )
 				{
-					//Commented code to give back creation block.
-					//event.getPlayer( ).getInventory( ).addItem( new ItemStack( creationBlock, 1 ) );
-					
-					plugin.schemaLoader.destroyTent( tent, event.getPlayer( ) );
+					event.getPlayer( ).getInventory( ).addItem( new ItemStack( creationBlock, 1 ) );
+					plugin.schemaLoader.destroyTent( tent, event.getPlayer( ), owningPlayer, tentListIndex );
 				}
 				else
 				{
